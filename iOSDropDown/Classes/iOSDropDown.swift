@@ -248,6 +248,10 @@ open class DropDown : UITextField{
 
         },
                        completion: { (finish) -> Void in
+                        if let selectedIndex = self.selectedIndex {
+                            let indexPath = IndexPath(row:selectedIndex,section:0)
+                            self.table.selectRow(at:indexPath,animated:true,scrollPosition:.middle)
+                        }
                         self.layoutIfNeeded()
 
         })
@@ -338,6 +342,17 @@ open class DropDown : UITextField{
         TableDidDisappearCompletion = completion
     }
 
+    public func setSelectedIndex(_ index:Int?) {
+        self.selectedIndex = index
+        guard let selectedIndex = self.selectedIndex else { return }
+        let selectedText = self.dataArray[selectedIndex]
+        if let selectedId = self.optionIds?[selectedIndex] {
+            didSelectCompletion(selectedText,selectedIndex,selectedId)
+            self.text = selectedText
+        }
+
+        return
+    }
 }
 
 //MARK: UITextFieldDelegate
@@ -525,7 +540,7 @@ extension UIView {
         layer.rasterizationScale = scale ? UIScreen.main.scale : 1
     }
 
-    var parentViewController: UIViewController? {
+    public var parentViewController: UIViewController? {
         var parentResponder: UIResponder? = self
         while parentResponder != nil {
             parentResponder = parentResponder!.next
